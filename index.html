@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>RNG Clicker II</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+        .main {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        nav {
+            width: 150px;
+            background-color: aquamarine;
+            border-right: 1px solid black;
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        nav ul li {
+            background-color: aquamarine;
+            border-bottom: 1px solid black;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+            font-weight: bold;
+        }
+
+        nav ul li:hover {
+            background-color: #7fffd4;
+        }
+
+        .locked {
+            opacity: 0.5;
+        }
+
+        .noexist::after {
+            content: "";
+        }
+
+        button#sell {
+            margin-top: auto;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        #clickbutton {
+            background-color: azure;
+            width: 6vw;
+            height: 6vw;
+            border-radius: 50%;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 40px auto;
+            transition: transform 0.2s ease;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #clickbutton:hover {
+            transform: scale(1.2);
+        }
+
+        #luckarea, #rollarea {
+            background-color: cornsilk;
+            max-width: 65vw;
+            text-align: center;
+            margin: 2vh auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        #rolling {
+            display: block;
+            margin: 20px auto;
+            padding: 8px 16px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #inventory {
+            margin-top: 20px;
+        }
+
+        ul#ul {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 2fr));
+            gap: 10px;
+            list-style: none;
+            padding: 0;
+        }
+
+        ul#ul li {
+            background-color: #f0f0f0;
+            padding: 5px;
+            border: 1px solid #ccc;
+            text-align: center;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <nav>
+            <ul>
+                <li><strong>PARTS:</strong></li>
+                <li id="p1">Part 1</li>
+                <li id="p2" class="locked">Part 2</li>
+                <li id="p3" class="locked noexist">Part 3</li>
+                <li id="p4" class="locked noexist">Part 4</li>
+                <li id="p5" class="locked noexist">Part 5</li>
+                <li id="p6" class="locked noexist">Part 6</li>
+                <li id="p7" class="locked noexist">Part 7</li>
+            </ul>
+            <button id="sell" onclick="sellall()">SELL ALL</button>
+        </nav>
+        <main>
+            <button id="clickbutton" onclick="getluck();">+<span id="clickamount">1 </span>Luck</button>
+            <div id="luckarea">
+                Luck: <span id="luckdisplay">1</span>
+            </div>
+            <div id="rollarea">
+                You rolled a <span id="rolldisplay">Nothing! Chance: 1 in 1</span>
+            </div>
+            <button id="rolling" onclick="rollrarity()">
+                ROLL!<br>Costs: <span id="rollcost">0</span> Luck
+            </button>
+            
+            <div id="inventory">
+                <ul id="ul"></ul>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        // ============== UTILITY FUNCTIONS ==============
+        import devsiderarities from "./rarities.js";
+        function generateBigSuffixes() {
+            const units = ["", "Un", "Du", "Tr", "Qa", "Qi", "Sx", "Sp", "Oc", "No"];
+            const tens = ["", "De", "Vg", "Tg", "QaD", "QiD", "SxD", "SpD", "OcD", "NoD"];
+            const hundreds = ["", "Ce", "DuCe", "TrCe", "QaCe", "QiCe", "SxCe", "SpCe", "OcCe", "NoCe"];
+            const thousandyearsofdeath = ["", "Mi", "Di", "Ti", "Qai", "Qii", "Sxi", "Spi", "Oi", "Ni"];
+            const suffixes = [];
+            let k = 3;
+            
+            for (let tyod = 0; tyod < thousandyearsofdeath.length; tyod++) {
+                k = 3 + tyod * 3000;
+                let uvz = k;
+                
+                for (let h = 0; h < hundreds.length; h++) {
+                    k = uvz + 300 * h;
+                    let uva = k;
+                    
+                    for (let t = 0; t < tens.length; t++) {
+                        k = uva + 30 * t;
+                        let uvb = k;
+                        
+                        if (t === 0 && h === 0 && tyod === 0) {
+                            for (let u = -1; u < units.length; u++) {
+                                k = uvb + 3 * u;
+                                k -= 3;
+                                let name;
+                                
+                                if (t === 0 && h === 0 && tyod === 0) {
+                                    switch (u) {
+                                        case -1: name = ""; break;
+                                        case 0: name = "K"; break;
+                                        case 1: name = "M"; break;
+                                        case 2: name = "B"; break;
+                                        case 3: name = "T"; break;
+                                        default: 
+                                            name = units[u] + tens[t] + hundreds[h] + thousandyearsofdeath[tyod]; 
+                                            break;
+                                    }
+                                } else {
+                                    name = units[u] + tens[t] + hundreds[h] + thousandyearsofdeath[tyod];
+                                }
+                                
+                                const vvv = k + 3;
+                                name += "(e" + vvv + ")";
+                                if (name !== "") suffixes.push(name);
+                            }
+                        } else {
+                            for (let u = 0; u < units.length; u++) {
+                                k = uvb + 3 * u;
+                                k -= 3;
+                                let name = units[u] + tens[t] + hundreds[h] + thousandyearsofdeath[tyod];
+                                const vvv = k + 3;
+                                name += "(e" + vvv + ")";
+                                if (name !== "") suffixes.push(name);
+                            }
+                        }
+                    }
+                }
+            }
+            return suffixes;
+        }
+
+        function s(num) {
+            const suffixes = generateBigSuffixes();
+            if (num === 0) return "0";
+            const tier = Math.floor(Math.log10(Math.abs(num)) / 3);
+            const maxTier = suffixes.length - 1;
+            const safeTier = Math.min(tier, maxTier);
+            const scaled = num / Math.pow(10, safeTier * 3);
+            const suffix = tier < suffixes.length ? suffixes[safeTier] : `(e${tier * 3})`;
+            return scaled.toFixed(3).replace(/\.000$/, "") + suffix;
+        }
+
+        function a(num) {
+            return 10 ** num;
+        }
+
+        function rng(x) {
+            return Math.floor(Math.random() * x + 1);
+        }
+
+        // ============== GAME STATE ==============
+        let part = localStorage.getItem("part") ? parseInt(localStorage.getItem("part")) : 1;
+        let lucks = localStorage.getItem("luck") ? JSON.parse(localStorage.getItem("luck")) : [5, 1];
+        let luckperclick = localStorage.getItem("lpc") ? parseInt(localStorage.getItem("lpc")) : 1;
+        let luck = lucks[0] * 10 ** lucks[1];
+        if(isNaN(luck)) {
+            luck = 1;
+        }
+        let rarities = localStorage.getItem("data") ? JSON.parse(localStorage.getItem("data")) : devsiderarities;
+        if(rarities.length !== devsiderarities.length) {
+            for(let i = 0; i < rarities.length - 1; i++) {
+                devsiderarities[i].owned = rarities[i].owned;
+            }
+        }
+        let specialrarity = localStorage.getItem("sr") ? localStorage.getItem("sr") : [
+            {name: "404", owned: 0, chance: 50000},
+            {name: "🍩", owned: 0, chance: 50000000},
+            {name: "Dev Token", owned: 0, chance: 50000000000},
+        ];
+        // ============== GAME FUNCTIONS ==============
+        function getluck() {
+            luck += luckperclick;
+            updateUI();
+        }
+
+        function updatestorage() {
+            const paahrts = luck.toExponential().split('e');
+            lucks = [Number(paahrts[0]) * 10 ** (paahrts[1] % 1 !== 0 ? 0 : 0), parseInt(paahrts[1])];
+            let iop = JSON.stringify(lucks);
+            localStorage.setItem("luck", iop);
+            localStorage.setItem("lpc", luckperclick);
+            localStorage.setItem("data", JSON.stringify(rarities));
+            localStorage.setItem("part", part);
+            localStorage.setItem("sr", specialrarity);
+        }
+
+        function updateUI() {
+            const ul = document.getElementById("ul");
+            ul.innerHTML = "";
+            
+            rarities.forEach((rarity) => {
+                if (rarity.part == part) {
+                    const li = document.createElement("li");
+                    li.textContent = `${rarity.name}: ${rarity.owned}`;
+                    ul.appendChild(li);
+                }
+            });
+            
+            document.getElementById("luckdisplay").textContent = s(luck);
+            document.getElementById("rollcost").textContent = s(findRollCost());
+            updatestorage();
+        }
+
+        function sellall() {
+            rarities.forEach((rarity) => {
+                luck += Math.floor(rarity.owned * rarity.chance / 50);
+                rarity.owned = 0;
+            });
+            updateUI();
+        }
+
+        function getBestOwnedRarity() {
+            for (let i = rarities.length - 1; i >= 0; i--) {
+                if (rarities[i].owned > 0) return i;
+            }
+            return 0;
+        }
+
+        function findRollCost() {
+            const best = getBestOwnedRarity();
+            return Math.max(1, Math.floor(rarities[best].chance / 1000));
+        }
+
+        function rollrarity() {
+            const cost = findRollCost();
+            if (luck < cost) {
+                return;
+            }
+            luck -= cost;
+            if (Math.floor((Math.random() * (500 * a(12)) - 1) == 1)) {
+                specialrarity[0].owned++;
+                const rolldisplay = document.getElementById("rolldisplay");
+                rolldisplay.textContent = `${specialrarity[0].name}! Chance: 1 in 500T(e12)`;
+                updateUI();
+            }
+            for (let i = rarities.length - 1; i >= 0; i--) {
+                const rarity = rarities[i];
+                if (rng(luck) >= rng(rarity.chance)) {
+                    if (rarity.part !== part) return;
+                    rarity.owned++;
+                    const rolldisplay = document.getElementById("rolldisplay");
+                    if (luck < rarity.chance) {
+                        rolldisplay.textContent = `${rarity.name}! Chance: ${s(luck)} in ${s(rarity.chance)}`;
+                    } else {
+                        rolldisplay.textContent = `${rarity.name}! Chance: 1 in 1`;
+                    }
+                    updateUI();
+                    return;
+                }
+            }
+        }
+        // ============== PART FUNCTIONS ==============
+        function p1() {
+            part = 1;
+            updateUI();
+        }
+
+        function p2() {
+            if (document.getElementById("p2").classList.contains("locked")) {
+                if (luck < 300 * a(12)) {
+                    alert("300T(e12) Luck needed to enter part 2!");
+                } else {
+                    document.getElementById("p2").classList.remove("locked");
+                    part = 2;
+                    updateUI();
+                }
+            } else {
+                part = 2;
+                updateUI();
+            }
+        }
+
+        function p3() {
+            if (document.getElementById("p3").classList.contains("locked")) {
+                if (luck < 300 * a(30)) {
+                    alert("300No(e30) Luck needed to enter part 3!");
+                } else {
+                    document.getElementById("p3").classList.remove("locked");
+                    part = 3;
+                    updateUI();
+                }
+            } else {
+                part = 3;
+                updateUI();
+            }
+        }
+
+        // ============== INITIALIZATION ==============
+        function initializeParts() {
+            for (let abcd = part; abcd >= 1; abcd--) {
+                document.getElementById(`p${abcd}`).classList.remove("locked");
+            }
+        }
+
+        function checkiffinish() {
+            if (rarities[rarities.length - 1].owned >= 1) {
+                return true;
+            }
+            return false;
+        }
+
+        // ============== EVENT LISTENERS ==============
+        document.getElementById("p3").addEventListener("click", p3);
+        document.getElementById("p2").addEventListener("click", p2);
+        document.getElementById("p1").addEventListener("click", p1);
+
+        document.addEventListener("DOMContentLoaded", function() {
+            initializeParts();
+            updateUI();
+        });
+
+        // ============== GAME LOOP ==============
+        const uiUpdateInterval = setInterval(updateUI, 100);
+        
+        let dainterval;
+        function autoroll(i) {
+            dainterval = setInterval(rollrarity, i);
+        }
+
+        let finishCheckCounter = 0;
+        setInterval(() => {
+            if (checkiffinish() && finishCheckCounter === 0) {
+                alert(`It seems you're having a great time playing! However, the developer has not updated the game any further than your current progress. Hence, if you would like to stop playing now, it is completely fine, furthermore, you do not need to worry, for all your progress is saved. Isn't that great? Goodbye and please come again tomorrow (the developer will update the game very soon!)`);
+                finishCheckCounter++;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
