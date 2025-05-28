@@ -126,22 +126,101 @@
             text-align: center;
             border-radius: 5px;
         }
-    </style>
-    
-    
+        .special {
+            color: gold;
+        }
+        .code-input-container {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background-color: #f0f8ff;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .code-input-container label {
+            margin-right: 8px;
+        }
+
+        #codeinput {
+            padding: 5px 8px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 120px;
+        }
+        .code-input-container {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background-color: #f0f8ff;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #codeinput {
+            padding: 5px 8px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 120px;
+        }
+
+        #submitcode {
+            padding: 6px 10px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        #submitcode:hover {
+            background-color: #45a049;
+        }
+
+        .code-error {
+            color: crimson;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            margin-left: 4px;
+            font-weight: normal;
+        }
+
+    </style>  
 </head>
 <body>
+    <div class="code-input-container">
+        <label for="codeinput">Enter Code ✨:</label>
+        <input type="text" id="codeinput" maxlength="20" pattern="[A-Za-z0-9]*" placeholder="Your Code">
+        <button id="submitcode" onclick="submitCode()">Submit</button>
+        <div id="codeerror" class="code-error"></div>
+    </div>
     <div class="main">
         <nav>
             <ul>
                 <li><strong>PARTS:</strong></li>
                 <li id="p1">Part 1</li>
                 <li id="p2" class="locked">Part 2</li>
-                <li id="p3" class="locked noexist">Part 3</li>
+                <li id="p3" class="locked">Part 3</li>
                 <li id="p4" class="locked noexist">Part 4</li>
                 <li id="p5" class="locked noexist">Part 5</li>
                 <li id="p6" class="locked noexist">Part 6</li>
                 <li id="p7" class="locked noexist">Part 7</li>
+                <li id="p0" class="locked special">Special</li>
             </ul>
             <button id="sell" onclick="sellall()">SELL ALL</button>
         </nav>
@@ -164,7 +243,11 @@
     </div>
 <script type="module">
         import devsiderarities from "./rarities.js";
-        async function oof () {window.devsiderarities = devsiderarities;}
+        import codes from "./codes.js";
+        async function oof () {
+            window.devsiderarities = devsiderarities;
+            window.codes = codes;
+        }
         oof();
     </script>
     <script>
@@ -257,7 +340,11 @@
         if(isNaN(luck)) {
             luck = 1;
         }
-        
+        let zacodes;
+        async function move() {
+        if(window.codes) {
+        zacodes = (localStorage.getItem("codes") !== undefined) ? JSON.parse(localStorage.getItem("codes")) : window.codes;}}
+        move();
         let rarities = localStorage.getItem("data") ? JSON.parse(localStorage.getItem("data")) : [
             {name: "Common", chance: 2, owned: 0, part: 1},
             {name: "Unusual", chance: 5, owned: 0, part: 1},
@@ -336,7 +423,9 @@
             {name: "Diamond", chance: 3 * a(51), owned: 0, part: 3},
             {name: "Emerald", chance: 15 * a(51), owned: 0, part: 3},
             {name: "Ultra (Mini)", chance: 75 * a(51), owned: 0, part: 3},
-            //{name: "Moonstone", chance}
+            {name: "404", owned: 0, chance: 50000, part: 0,},
+            {name: "🍩", owned: 0, chance: 5000000, part: 0},
+            {name: "Dev Token", owned: 0, chance: 50000000000, part: 0},
         ];
         async function check() {
             
@@ -347,11 +436,6 @@
             }
         }}};
         check();
-        let specialrarity = localStorage.getItem("sr") ? JSON.parse(localStorage.getItem("sr")) : [
-            {name: "404", owned: 0, chance: 50000},
-            {name: "🍩", owned: 0, chance: 50000000},
-            {name: "Dev Token", owned: 0, chance: 50000000000},
-        ];
         // ============== GAME FUNCTIONS ==============
         function getluck() {
             luck += luckperclick;
@@ -362,11 +446,13 @@
             const paahrts = luck.toExponential().split('e');
             lucks = [Number(paahrts[0]) * 10 ** (paahrts[1] % 1 !== 0 ? 0 : 0), parseInt(paahrts[1])];
             let iop = JSON.stringify(lucks);
+            move();
             localStorage.setItem("luck", iop);
             localStorage.setItem("lpc", luckperclick);
             localStorage.setItem("data", JSON.stringify(rarities));
             localStorage.setItem("part", part);
-            localStorage.setItem("sr", JSON.stringify(specialrarity));
+            if(zacodes !== undefined ) {
+            localStorage.setItem("codes", JSON.stringify(zacodes));}
         }
 
         function updateUI() {
@@ -411,14 +497,19 @@
             if (luck < cost) {
                 return;
             }
+            if(part == 0) return;
             luck -= cost;
-            if (Math.floor(Math.random() * (500 * a(12))) === 1) {
-                specialrarity[0].owned++;
-                const rolldisplay = document.getElementById("rolldisplay");
-                rolldisplay.textContent = `${specialrarity[0].name}! Chance: 1 in 500T(e12)`;
-                updateUI();
+            for (let j = rarities.length - 1; j >= Math.max(0, rarities.length - 3); j--) {
+                const rarity = rarities[j];
+                if (rng(rarity.chance) == 1) {
+                    rarity.owned++;
+                    const rolldisplay = document.getElementById("rolldisplay");
+                    rolldisplay.innerHTML = `<span id="rolldisplay" style="color: gold">${rarity.name}! Chance: 1 in ${s(rarity.chance)}</span>`;
+                    updateUI();
+                    return;
+                }
             }
-            for (let i = rarities.length - 1; i >= 0; i--) {
+            for (let i = rarities.length - 4; i >= 0; i--) {
                 const rarity = rarities[i];
                 if (rng(luck) >= rng(rarity.chance)) {
                     if (rarity.part !== part) return;
@@ -437,6 +528,10 @@
         // ============== PART FUNCTIONS ==============
         function p1() {
             part = 1;
+            updateUI();
+        }
+        function p0() {
+            part = 0;
             updateUI();
         }
 
@@ -488,14 +583,47 @@
         document.getElementById("p3").addEventListener("click", p3);
         document.getElementById("p2").addEventListener("click", p2);
         document.getElementById("p1").addEventListener("click", p1);
+        document.getElementById("p0").addEventListener("click", p0);
 
         document.addEventListener("DOMContentLoaded", function() {
             initializeParts();
             updateUI();
         });
+        const errorbox = document.getElementById("codeerror");
 
+        function checkifcodecorrect(ching) {
+            if (!zacodes) {
+                errorbox.innerHTML = "Apologies. Codes are down for a moment. Please try again later.";
+                return;
+            }
+
+            for (let code of zacodes) {
+                if (code.name === ching) {
+                    if (!code.used) {
+                        code.effect();
+                        code.used = true;
+                        errorbox.textContent = "Success!";
+                    } else {
+                        errorbox.textContent = "Already Redeemed.";
+                    }
+                    return; // Exit after finding the code
+                }
+            }
+
+            // If no matching code was found
+            errorbox.textContent = "Code does not exist.";
+        }
+
+        function submitCode() {
+            const code = document.getElementById('codeinput').value;
+            if (code.match(/^[A-Za-z0-9]{1,20}$/)) {
+                checkifcodecorrect(code);
+            } else {
+                errorbox.textContent = "Invalid code. Use only letters and numbers (max 20 characters).";
+            }
+        }
         // ============== GAME LOOP ==============
-        const uiUpdateInterval = setInterval(updateUI, 10000);
+        //const uiUpdateInterval = setInterval(updateUI, 500);
         
         let dainterval;
         function autoroll(i) {
