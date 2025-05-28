@@ -160,10 +160,13 @@
             </div>
         </main>
     </div>
-
     <script type="module">
-        // ============== UTILITY FUNCTIONS ==============
         import devsiderarities from "./rarities.js";
+        window.devsiderarities = devsiderarities;
+    </script>
+    
+    <script>
+        // ============== UTILITY FUNCTIONS ==============
         function generateBigSuffixes() {
             const units = ["", "Un", "Du", "Tr", "Qa", "Qi", "Sx", "Sp", "Oc", "No"];
             const tens = ["", "De", "Vg", "Tg", "QaD", "QiD", "SxD", "SpD", "OcD", "NoD"];
@@ -252,13 +255,13 @@
         if(isNaN(luck)) {
             luck = 1;
         }
-        let rarities = localStorage.getItem("data") ? JSON.parse(localStorage.getItem("data")) : devsiderarities;
-        if(rarities.length !== devsiderarities.length) {
+        let rarities = localStorage.getItem("data") ? JSON.parse(localStorage.getItem("data")) : window.devsiderarities;
+        if(rarities.length !== window.devsiderarities.length) {
             for(let i = 0; i < rarities.length - 1; i++) {
-                devsiderarities[i].owned = rarities[i].owned;
+                window.devsiderarities[i].owned = rarities[i].owned;
             }
         }
-        let specialrarity = localStorage.getItem("sr") ? localStorage.getItem("sr") : [
+        let specialrarity = localStorage.getItem("sr") ? JSON.parse(localStorage.getItem("sr")) : [
             {name: "404", owned: 0, chance: 50000},
             {name: "🍩", owned: 0, chance: 50000000},
             {name: "Dev Token", owned: 0, chance: 50000000000},
@@ -271,7 +274,7 @@
 
         function updatestorage() {
             const paahrts = luck.toExponential().split('e');
-            lucks = [Number(paahrts[0]) * 10 ** (paahrts[1] % 1 !== 0 ? 0 : 0), parseInt(paahrts[1])];
+            lucks = [Number(paahrts[0]), parseInt(paahrts[1])];
             let iop = JSON.stringify(lucks);
             localStorage.setItem("luck", iop);
             localStorage.setItem("lpc", luckperclick);
@@ -323,7 +326,7 @@
                 return;
             }
             luck -= cost;
-            if (Math.floor((Math.random() * (500 * a(12)) - 1) == 1)) {
+            if (Math.floor(Math.random() * (500 * a(12))) === 1) {
                 specialrarity[0].owned++;
                 const rolldisplay = document.getElementById("rolldisplay");
                 rolldisplay.textContent = `${specialrarity[0].name}! Chance: 1 in 500T(e12)`;
@@ -420,6 +423,17 @@
                 finishCheckCounter++;
             }
         }, 1000);
+        Object.assign(window, {
+            rollrarity,
+            getluck,
+            sellall,
+            autoroll,
+            checkiffinish,
+            initializeparts,
+            p1,
+            p2,
+            p3,
+        });
     </script>
 </body>
 </html>
