@@ -127,6 +127,8 @@
             border-radius: 5px;
         }
     </style>
+    
+    
 </head>
 <body>
     <div class="main">
@@ -160,11 +162,11 @@
             </div>
         </main>
     </div>
-    <script type="module">
+<script type="module">
         import devsiderarities from "./rarities.js";
-        window.devsiderarities = devsiderarities;
+        async function oof () {window.devsiderarities = devsiderarities;}
+        oof();
     </script>
-    
     <script>
         // ============== UTILITY FUNCTIONS ==============
         function generateBigSuffixes() {
@@ -255,12 +257,96 @@
         if(isNaN(luck)) {
             luck = 1;
         }
-        let rarities = localStorage.getItem("data") ? JSON.parse(localStorage.getItem("data")) : window.devsiderarities;
+        
+        let rarities = localStorage.getItem("data") ? JSON.parse(localStorage.getItem("data")) : [
+            {name: "Common", chance: 2, owned: 0, part: 1},
+            {name: "Unusual", chance: 5, owned: 0, part: 1},
+            {name: "Rare", chance: 25, owned: 0, part: 1},
+            {name: "Epic", chance: 125, owned: 0, part: 1},
+            {name: "Legendary", chance: 625, owned: 0, part: 1},
+            {name: "Mythical", chance: 3 * a(3), owned: 0, part: 1},
+            {name: "Ultra", chance: 15 * a(3), owned: 0, part: 1},
+            {name: "Super", chance: 75 * a(3), owned: 0, part: 1},
+            {name: "Void", chance: 400 * a(3), owned: 0, part: 1},
+            {name: "Infinitesimal", chance: 2 * a(6), owned: 0, part: 1},
+            {name: "Atomic", chance: 10 * a(6), owned: 0, part: 1},
+            {name: "Cellular", chance: 50 * a(6), owned: 0, part: 1},
+            {name: "Microscopic", chance: 250 * a(6), owned: 0, part: 1},
+            {name: "Miniature", chance: a(9), owned: 0, part: 1},
+            {name: "Small", chance: 5 * a(9), owned: 0, part: 1},
+            {name: "Medium", chance: 25 * a(9), owned: 0, part: 1},
+            {name: "Large", chance: 125 * a(9), owned: 0, part: 1},
+            {name: "Gigantic", chance: 625 * a(9), owned: 0, part: 1},
+            {name: "Infinite", chance: 3 * a(12), owned: 0, part: 1},
+            {name: "Planetary", chance: 15 * a(12), owned: 0, part: 1},
+            {name: "Stellar", chance: 75 * a(12), owned: 0, part: 1},
+            {name: "Interstellar", chance: 400 * a(12), owned: 0, part: 1},
+            {name: "Galactic", chance: 2 * a(15), owned: 0, part: 1},
+            {name: "Universal", chance: 10 * a(15), owned: 0, part: 1},
+            {name: "Surreal", chance: 50 * a(15), owned: 0, part: 1},
+            {name: "Ethereal", chance: 250 * a(15), owned: 0, part: 1},
+            {name: "Real", chance: 1250 * a(15), owned: 0, part: 1},
+            {name: "Fiery", chance: 6 * a(18), owned: 0, part: 2},
+            {name: "Oceanic", chance: 30 * a(18), owned: 0, part: 2},
+            {name: "Frozen", chance: 150 * a(18), owned: 0, part: 2},
+            {name: "Dark", chance: 750 * a(18), owned: 0, part: 2},
+            {name: "Shadow", chance: 4 * a(21), owned: 0, part: 2},
+            {name: "Magma", chance: 20 * a(21), owned: 0, part: 2},
+            {name: "Light", chance: 100 * a(21), owned: 0, part: 2},
+            {name: "Electric", chance: 500 * a(21), owned: 0, part: 2},
+            {name: "Portal", chance: 2.5 * a(24), owned: 0, part: 2},
+            {name: "Windy", chance: 10 * a(24), owned: 0, part: 2},
+            {name: "Soul", chance: 50 * a(24), owned: 0, part: 2},
+            {name: "Sandy", chance: 250 * a(24), owned: 0, part: 2},
+            {name: "Creation", chance: 1.25 * a(27), owned: 0, part: 2},
+            {name: "Destruction", chance: 6 * a(27), owned: 0, part: 2},
+            {name: "Stormy", chance: 30 * a(27), owned: 0, part: 2},
+            {name: "Quantum", chance: 150 * a(27), owned: 0, part: 2},
+            {name: "Fluidity", chance: 750 * a(27), owned: 0, part: 2},
+            {name: "Earth", chance: 3.5 * a(30), owned: 0, part: 2},
+            {name: "Transcendental", chance: 15 * a(30), owned: 0, part: 2},
+            {name: "Omnipotent", chance: 75 * a(30), owned: 0, part: 2},
+            {name: "Antimatter", chance: 400 * a(30), owned: 0, part: 2},
+            {name: "Secret", chance: 2 * a(33), owned: 0, part: 2},
+            {name: "Demonic", chance: 10 * a(33), owned: 0, part: 2},
+            {name: "Angelic", chance: 50 * a(33), owned: 0, part: 2},
+            {name: "Eternal", chance: 250 * a(33), owned: 0, part: 2},
+            {name: "Zenith", chance: 1250 * a(33), owned: 0, part: 2},
+            {name: "Illusional", chance: 6 * a(36), owned: 0, part: 2},
+            {name: "Magical", chance: 30 * a(36), owned: 0, part: 2},
+            {name: "Monazite", chance: 150 * a(36), owned: 0, part: 2},
+            {name: "Coal", chance: 750 * a(36), owned: 0, part: 3},
+            {name: "Iron", chance: 4 * a(39), owned: 0, part: 3},
+            {name: "Common (Mini)", chance: 20 * a(39), owned: 0, part: 3},
+            {name: "Copper", chance: 100 * a(39), owned: 0, part: 3},
+            {name: "Bronze", chance: 500 * a(39), owned: 0, part: 3},
+            {name: "Unusual (Mini)", chance: 2.5 * a(42), owned: 0, part: 3},
+            {name: "Silver", chance: 12.5 * a(42), owned: 0, part: 3},
+            {name: "Gold", chance: 60 * a(42), owned: 0, part: 3},
+            {name: "Rare (Mini)", chance: 300 * a(42), owned: 0, part: 3},
+            {name: "Platinum", chance: 1.5 * a(45), owned: 0, part: 3},
+            {name: "Ruby", chance: 7.5 * a(45), owned: 0, part: 3},
+            {name: "Epic (Mini)", chance: 35 * a(45), owned: 0, part: 3},
+            {name: "Ember", chance: 200 * a(45), owned: 0, part: 3},
+            {name: "Aquamarine", chance: 1 * a(48), owned: 0, part: 3},
+            {name: "Legendary (Mini)", chance: 5 * a(48), owned: 0, part: 3},
+            {name: "Sunstone", chance: 25 * a(48), owned: 0, part: 3},
+            {name: "Amethyst", chance: 125 * a(48), owned: 0, part: 3},
+            {name: "Mythical (Mini)", chance: 625 * a(48), owned: 0, part: 3},
+            {name: "Diamond", chance: 3 * a(51), owned: 0, part: 3},
+            {name: "Emerald", chance: 15 * a(51), owned: 0, part: 3},
+            {name: "Ultra (Mini)", chance: 75 * a(51), owned: 0, part: 3},
+            //{name: "Moonstone", chance}
+        ];
+        async function check() {
+            
+        if(window.devsiderarities) {
         if(rarities.length !== window.devsiderarities.length) {
-            for(let i = 0; i < rarities.length - 1; i++) {
+            for(let i = 0; i < rarities.length; i++) {
                 window.devsiderarities[i].owned = rarities[i].owned;
             }
-        }
+        }}};
+        check();
         let specialrarity = localStorage.getItem("sr") ? JSON.parse(localStorage.getItem("sr")) : [
             {name: "404", owned: 0, chance: 50000},
             {name: "🍩", owned: 0, chance: 50000000},
@@ -274,13 +360,13 @@
 
         function updatestorage() {
             const paahrts = luck.toExponential().split('e');
-            lucks = [Number(paahrts[0]), parseInt(paahrts[1])];
+            lucks = [Number(paahrts[0]) * 10 ** (paahrts[1] % 1 !== 0 ? 0 : 0), parseInt(paahrts[1])];
             let iop = JSON.stringify(lucks);
             localStorage.setItem("luck", iop);
             localStorage.setItem("lpc", luckperclick);
             localStorage.setItem("data", JSON.stringify(rarities));
             localStorage.setItem("part", part);
-            localStorage.setItem("sr", specialrarity);
+            localStorage.setItem("sr", JSON.stringify(specialrarity));
         }
 
         function updateUI() {
@@ -409,7 +495,7 @@
         });
 
         // ============== GAME LOOP ==============
-        const uiUpdateInterval = setInterval(updateUI, 100);
+        const uiUpdateInterval = setInterval(updateUI, 10000);
         
         let dainterval;
         function autoroll(i) {
@@ -423,17 +509,7 @@
                 finishCheckCounter++;
             }
         }, 1000);
-        Object.assign(window, {
-            rollrarity,
-            getluck,
-            sellall,
-            autoroll,
-            checkiffinish,
-            initializeparts,
-            p1,
-            p2,
-            p3,
-        });
+        updateUI();
     </script>
 </body>
 </html>
