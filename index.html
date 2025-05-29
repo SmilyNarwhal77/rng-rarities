@@ -341,12 +341,32 @@
             luck = 1;
         }
         let zacodes;
-        async function move() {
-        if(window.codes) {
-        zacodes = (localStorage.getItem("codes") !== undefined && localStorage.getItem("codes") !== null) ? JSON.parse(localStorage.getItem("codes")) : window.codes;};
-    for(let i = 0; i < 5; i++) {
-        zacodes[i].effect = window.codes[i].effect;
-    }}
+
+async function move() {
+    if (window.codes) {
+        const stored = localStorage.getItem("codes");
+        zacodes = (stored !== undefined && stored !== null)
+            ? JSON.parse(stored)
+            : window.codes;
+
+        // Reassign effect functions from window.codes
+        for (let i = 0; i < Math.min(5, window.codes.length); i++) {
+            if (typeof window.codes[i].effect === "function") {
+                zacodes[i].effect = window.codes[i].effect;
+            }
+        }
+
+        // Apply effects for owned codes
+        for (const code of zacodes) {
+            if (code.owned === true && typeof code.effect === "function") {
+                code.effect();
+            }
+        }
+    } else {
+        console.warn("window.codes is not defined.");
+    }
+}
+
         move();
         let rarities = localStorage.getItem("data") ? JSON.parse(localStorage.getItem("data")) : [
     {name: "Common", chance: 2, owned: 0, part: 1},
